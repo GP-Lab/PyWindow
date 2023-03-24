@@ -111,7 +111,7 @@
          </item>
          <item>
           <property name="text">
-           <string>flat-top</string>
+           <string>triang</string>
           </property>
          </item>
          <item>
@@ -127,6 +127,11 @@
          <item>
           <property name="text">
            <string>kaiser</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>flattop</string>
           </property>
          </item>
         </widget>
