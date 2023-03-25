@@ -5,10 +5,11 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMe
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.colors as mcolors
+
 from untitled import Ui_MainWindow
 from new_untitled import Ui_Form
 from scipy.signal import get_window
-import itertools
+
 class Widget(QWidget,Ui_Form):
     def __init__(self):
         super().__init__()
@@ -17,6 +18,10 @@ class Widget(QWidget,Ui_Form):
 
         self.lineEdit.setText('512')
         self.comboBox.setCurrentIndex(0)
+
+
+
+
 class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
     def __init__(self):
         super().__init__()
@@ -39,7 +44,12 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.plot_deafault()
         self.point_num=512
         self.combo_index=0
+        self.log_mode=0
         self.lineEdit_2.setEnabled(False)
+
+        # 让combobox_3一开始选择第二个
+        self.response_mode = 1
+        self.widget.comboBox_3.setCurrentIndex(1)
 
         # 让widget可以被多选
         self.listWidget.setSelectionMode(3)
@@ -84,6 +94,10 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.point_num = int(self.widget.lineEdit.text())
         # 获取combo选择了第几个
         self.combo_index = self.widget.comboBox.currentIndex()
+        # 获取线性还是对数模式
+        self.log_mode = self.widget.comboBox_2.currentIndex()
+        # 获取response模式
+        self.response_mode = self.widget.comboBox_3.currentIndex()
         # 刷新图像(仅在选中窗口的情况下)
         if self.listWidget.currentItem():
             self.plot()
@@ -103,7 +117,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         # 类型和长度默认为 Hanning 和 64
         self.window_type='hann'
         self.window_length=64
-
         self.window[self.window_name]={'type':self.window_type,'length':self.window_length}
 
     def listwidget_add(self):
@@ -180,25 +193,49 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
             fft_vals = np.abs(np.fft.fft(window, self.point_num)[:self.point_num])
             freqs_normalized = freqs / np.pi
-            # 画出正半轴对称图形
-            ax2.plot(freqs_normalized, 20 * np.log10(fft_vals + 1e-15),color=COLORS[j])
-            # 画出负半轴对称图形
-            ax2.plot(-freqs_normalized, 20 * np.log10(fft_vals + 1e-15),color=COLORS[j])
+
+            # 当选中dB模式，将幅度响应转换为dB
+            if self.response_mode == 1:
+                ax2.set_ylabel('Magnitude(dB)')
+                ax2.set_ylim([-100, 50])
+                fft_vals = np.log10(fft_vals + 1e-15) * 20
+            elif self.response_mode == 0:
+                ax2.set_ylabel('Magnitude')
+
+                print(1)
+            ax2.plot(freqs_normalized, fft_vals, color=COLORS[j])
+            ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
+
             j += 1
+
+       # 设置坐标轴的范围
+        if self.log_mode==1:
+            if self.response_mode == 1:
+                ax2.set_ylim([-150, 1e2])
+            elif self.response_mode == 0:
+                ax2.set_ylim([0, 50])
+            ax2.set_xscale('log')
+            ax2.set_xlim([1e-3, 1])
+
+        elif self.log_mode==0:
+            ax2.set_yscale('linear')
+            if self.combo_index==0:
+                ax2.set_xlim([0, 1])
+            elif self.combo_index==1:
+                ax2.set_xlim([0, 2])
+            elif self.combo_index==2:
+                ax2.set_xlim([-1, 1])
+
+
         ax1.grid(True)
         ax1.set_xlabel('Time')
         ax1.set_ylabel('Amplitude')
         ax1.set_title('Time Domain')
         self.canvas1.draw()
 
-        if self.combo_index==0:
-            ax2.set_xlim([0, 1])
-        elif self.combo_index==1:
-            ax2.set_xlim([0, 2])
-        elif self.combo_index==2:
-            ax2.set_xlim([-1, 1])
 
-        ax2.set_ylim([-150, 50])
+
+
         ax2.grid(True)
         ax2.set_xlabel('Frequency')
         ax2.set_ylabel('Magnitude(dB)')
