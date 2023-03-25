@@ -153,7 +153,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             QMessageBox.warning(self, 'Warning', 'Please input number!', QMessageBox.Yes)
     def plot(self):
         # 获取窗口的类型,如果是Kaiser，获取beta
-        if self.comboBox.currentIndex()==4:
+        if self.comboBox.currentText()=='kaiser':
             window=get_window((self.window[self.window_name]['type'],float(self.lineEdit_2.text())),int(self.window[self.window_name]['length']))
         else:
             window=get_window(self.window[self.window_name]['type'],int(self.window[self.window_name]['length']))

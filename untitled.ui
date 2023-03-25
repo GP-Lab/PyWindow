@@ -134,6 +134,66 @@
            <string>flattop</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>barlett</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>lanczos</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>boxcar</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>parzen</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>bohman</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>blackmanharris</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>nuttall</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>barthann</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>cosine</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>exponential</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>tukey</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>taylor</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item row="2" column="0">
