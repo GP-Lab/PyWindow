@@ -4,11 +4,11 @@ import numpy as np
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-
+import matplotlib.colors as mcolors
 from untitled import Ui_MainWindow
 from new_untitled import Ui_Form
 from scipy.signal import get_window
-
+import itertools
 class Widget(QWidget,Ui_Form):
     def __init__(self):
         super().__init__()
@@ -33,11 +33,18 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
         # 创建一个字典用来保存窗口的参数
         self.window={}
+
+        # 一些参数的初始化
         self.i = 1
         self.plot_deafault()
         self.point_num=512
         self.combo_index=0
         self.lineEdit_2.setEnabled(False)
+
+        # 让widget可以被多选
+        self.listWidget.setSelectionMode(3)
+
+
         # 按钮点击创建窗
         self.pushButton.clicked.connect(self.listwidget_add)
         self.pushButton_2.clicked.connect(self.listwidget_del)
@@ -152,37 +159,37 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         else:
             QMessageBox.warning(self, 'Warning', 'Please input number!', QMessageBox.Yes)
     def plot(self):
-        # 获取窗口的类型,如果是Kaiser，获取beta
-        if self.comboBox.currentText()=='kaiser':
-            window=get_window((self.window[self.window_name]['type'],float(self.lineEdit_2.text())),int(self.window[self.window_name]['length']))
-        else:
-            window=get_window(self.window[self.window_name]['type'],int(self.window[self.window_name]['length']))
 
-        t=np.arange(self.window[self.window_name]['length'])
-        # 计算频域
-
-        freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
-        fft_vals = np.abs(np.fft.fft(window, self.point_num)[:self.point_num])
-        freqs_normalized = freqs / np.pi
-
-
-
-        # 绘制时域图像
         self.canvas1.figure.clf()
+        self.canvas2.figure.clf()
         ax1 = self.canvas1.figure.add_subplot(111)
+        ax2 = self.canvas2.figure.add_subplot(111)
+        COLORS = list(mcolors.TABLEAU_COLORS.values()) + list(mcolors.CSS4_COLORS.values())
+        j=0
+        # 遍历listWidget中的窗口，画出所有窗口的图像
+        for i in self.listWidget.selectedItems():
+            t = np.arange(self.window[i.text()]['length'])
+            # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
+            if self.comboBox.currentText() == 'kaiser':
+                window = get_window((self.window[i.text()]['type'], float(self.lineEdit_2.text())),
+                                    int(self.window[i.text()]['length']))
+            else:
+                window = get_window(self.window[i.text()]['type'], int(self.window[i.text()]['length']))
+            ax1.plot(t, window)
+            # 计算频域
+            freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
+            fft_vals = np.abs(np.fft.fft(window, self.point_num)[:self.point_num])
+            freqs_normalized = freqs / np.pi
+            # 画出正半轴对称图形
+            ax2.plot(freqs_normalized, 20 * np.log10(fft_vals + 1e-15),color=COLORS[j])
+            # 画出负半轴对称图形
+            ax2.plot(-freqs_normalized, 20 * np.log10(fft_vals + 1e-15),color=COLORS[j])
+            j += 1
         ax1.grid(True)
-        ax1.plot(t, window)
         ax1.set_xlabel('Time')
         ax1.set_ylabel('Amplitude')
         ax1.set_title('Time Domain')
         self.canvas1.draw()
-        # 绘制频域图像
-        self.canvas2.figure.clf()
-        ax2=self.canvas2.figure.add_subplot(111)
-        ax2.plot(freqs_normalized, 20*np.log10(fft_vals + 1e-15),color='b')
-        # 画出负半轴对称图形
-        ax2.plot(-freqs_normalized, 20*np.log10(fft_vals + 1e-15),color='b')
-
 
         if self.combo_index==0:
             ax2.set_xlim([0, 1])
@@ -190,6 +197,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             ax2.set_xlim([0, 2])
         elif self.combo_index==2:
             ax2.set_xlim([-1, 1])
+
         ax2.set_ylim([-150, 50])
         ax2.grid(True)
         ax2.set_xlabel('Frequency')
@@ -202,7 +210,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.canvas1 = FigureCanvas(self.fig1)
         layout = QVBoxLayout()  # 垂直布局
         layout.addWidget(self.canvas1)
-        self.fig1.subplots_adjust(left=0.2, bottom=None, right=0.9, top=None, wspace=None, hspace=None)
+        self.fig1.subplots_adjust(left=0.2, bottom=0.2, right=0.9, top=0.9, wspace=None, hspace=None)
         self.graphicsView.setLayout(layout)  # 设置好布局之后调用函数
 
         self.fig2 = plt.figure()
