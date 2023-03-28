@@ -117,7 +117,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         # 类型和长度默认为 Hanning 和 64
         self.window_type='hann'
         self.window_length=64
-        self.window[self.window_name]={'type':self.window_type,'length':self.window_length}
+        self.s_mode='symmetric'
+        self.window[self.window_name]={'type':self.window_type,'length':self.window_length,'s_mode':self.s_mode}
 
     def listwidget_add(self):
 
@@ -148,7 +149,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.comboBox.setCurrentText(self.window[self.window_name]['type'])
         # 显示长度
         self.lineEdit_3.setText(str(self.window[self.window_name]['length']))
-
+        # 显示对称模式
+        self.comboBox_2.setCurrentText(self.window[self.window_name]['s_mode'])
 
     def window_change(self):
         # 当parameter可用时，一定要填入参数
@@ -164,13 +166,15 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             self.window_name=self.lineEdit.text()
             self.window_type=self.comboBox.currentText()
             self.window_length=int(self.lineEdit_3.text())
-            self.window[self.window_name]={'type':self.window_type,'length':self.window_length}
+            self.s_mode=self.comboBox_2.currentText()
+            self.window[self.window_name]={'type':self.window_type,'length':self.window_length,'s_mode':self.s_mode}
             # 更新listWidget的显示
             self.listWidget.currentItem().setText(self.window_name)
             # 更新图像
             self.plot()
         else:
             QMessageBox.warning(self, 'Warning', 'Please input number!', QMessageBox.Yes)
+
     def plot(self):
 
         self.canvas1.figure.clf()
@@ -183,11 +187,17 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         for i in self.listWidget.selectedItems():
             t = np.arange(self.window[i.text()]['length'])
             # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
+
             if self.comboBox.currentText() == 'kaiser':
                 window = get_window((self.window[i.text()]['type'], float(self.lineEdit_2.text())),
                                     int(self.window[i.text()]['length']))
             else:
-                window = get_window(self.window[i.text()]['type'], int(self.window[i.text()]['length']))
+                if self.window[i.text()]['s_mode']=='symmetric':
+                    s_mode=False
+                elif self.window[i.text()]['s_mode']=='periodic':
+                    s_mode=True
+                window = get_window(self.window[i.text()]['type'], int(self.window[i.text()]['length']),fftbins=s_mode)
+
             ax1.plot(t, window)
             # 计算频域
             freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
@@ -203,6 +213,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 ax2.set_ylabel('Magnitude')
 
                 print(1)
+
             ax2.plot(freqs_normalized, fft_vals, color=COLORS[j])
             ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
 
