@@ -9,6 +9,7 @@ import matplotlib.colors as mcolors
 from untitled import Ui_MainWindow
 from new_untitled import Ui_Form
 from scipy.signal import get_window
+from qt_material import apply_stylesheet
 
 class Widget(QWidget,Ui_Form):
     def __init__(self):
@@ -274,7 +275,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    QApplication.setStyle('Fusion')
     mainWindow = MainWindow()
-    # apply_stylesheet(app, theme='dark_blue.xml')
+    apply_stylesheet(app, theme='dark_blue.xml')
     mainWindow.show()
     sys.exit(app.exec_())
