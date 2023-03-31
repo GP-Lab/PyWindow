@@ -55,6 +55,12 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         # 让widget可以被多选
         self.listWidget.setSelectionMode(3)
 
+        # 修改按钮的名字
+        self.pushButton.setText('Add_window')
+        self.pushButton_2.setText('Delete')
+        self.pushButton_3.setText('Apply')
+        self.pushButton_4.setText('Copy')
+
 
         # 按钮点击创建窗
         self.pushButton.clicked.connect(self.listwidget_add)
