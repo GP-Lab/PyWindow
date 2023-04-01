@@ -260,6 +260,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionExport"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -311,6 +312,11 @@
   <action name="actionLegend">
    <property name="text">
     <string>Legend</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>Export</string>
    </property>
   </action>
  </widget>
