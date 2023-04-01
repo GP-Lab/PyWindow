@@ -82,6 +82,9 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.actionLegend.setCheckable(True)
         self.actionLegend.setChecked(False)
 
+        # 点击Tool的Full analysis，弹出一个窗口
+        self.actionFull_View.triggered.connect(self.full_analysis)
+
         # 点击菜单栏的选项，显示或者隐藏对应的图像
         self.actionTime_Domain.triggered.connect(self.show_time)
         self.actionFrequency_Domain_2.triggered.connect(self.show_freq)
@@ -268,6 +271,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         ax2.set_title('Frequency Domain')
         self.canvas2.draw()
 
+        plt.close('all')
+
     def plot_deafault(self):
         self.fig1 = plt.figure()
         self.canvas1 = FigureCanvas(self.fig1)
@@ -295,6 +300,87 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         else:
             self.legend_bool = 0
             self.plot()
+
+    def full_analysis(self):
+        plt.close('all')
+        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8, 3))
+
+        COLORS = list(mcolors.TABLEAU_COLORS.values()) + list(mcolors.CSS4_COLORS.values())
+        j = 0
+        # 遍历listWidget中的窗口，画出所有窗口的图像
+        for i in self.listWidget.selectedItems():
+            t = np.arange(self.window[i.text()]['length'])
+            # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
+
+            if self.comboBox.currentText() == 'kaiser':
+                window = get_window((self.window[i.text()]['type'], float(self.lineEdit_2.text())),
+                                    int(self.window[i.text()]['length']))
+            else:
+                if self.window[i.text()]['s_mode'] == 'symmetric':
+                    s_mode = False
+                elif self.window[i.text()]['s_mode'] == 'periodic':
+                    s_mode = True
+                window = get_window(self.window[i.text()]['type'], int(self.window[i.text()]['length']), fftbins=s_mode)
+
+            ax1.plot(t, window)
+            # 计算频域
+            freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
+            fft_vals = np.abs(np.fft.fft(window, self.point_num)[:self.point_num])
+            freqs_normalized = freqs / np.pi
+
+            # 当选中dB模式，将幅度响应转换为dB
+            if self.response_mode == 1:
+                ax2.set_ylabel('Magnitude(dB)')
+                ax2.set_ylim([-100, 50])
+                fft_vals = np.log10(fft_vals + 1e-15) * 20
+            elif self.response_mode == 0:
+                ax2.set_ylabel('Magnitude')
+            ax2.plot(freqs_normalized, fft_vals, color=COLORS[j])
+            ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
+
+            j += 1
+
+        # 设置坐标轴的范围
+        if self.log_mode == 1:
+            if self.response_mode == 1:
+                ax2.set_ylim([-150, 1e2])
+            elif self.response_mode == 0:
+                ax2.set_ylim([0, 50])
+            ax2.set_xscale('log')
+            ax2.set_xlim([1e-3, 1])
+        elif self.log_mode == 0:
+            ax2.set_yscale('linear')
+            if self.combo_index == 0:
+                ax2.set_xlim([0, 1])
+            elif self.combo_index == 1:
+                ax2.set_xlim([0, 2])
+            elif self.combo_index == 2:
+                ax2.set_xlim([-1, 1])
+
+        # 设置图例
+        if self.legend_bool == 1:
+            j = 0
+            legend_name = []
+            # 显示图例，用窗口的名字
+            for i in self.listWidget.selectedItems():
+                legend_name.append(i.text())
+            ax1.legend(legend_name, loc='upper right')
+            ax2.legend(legend_name)
+
+        ax1.grid(True)
+        ax1.set_xlabel('Time')
+        ax1.set_ylabel('Amplitude')
+        ax1.set_title('Time Domain')
+
+
+        ax2.grid(True)
+        ax2.set_xlabel('Frequency')
+        ax2.set_ylabel('Magnitude(dB)')
+        ax2.set_title('Frequency Domain')
+
+        plt.subplots_adjust(left=0.1, bottom=0.2, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
+        plt.show()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
