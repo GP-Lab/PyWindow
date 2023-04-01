@@ -47,7 +47,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.combo_index=0
         self.log_mode=0
         self.lineEdit_2.setEnabled(False)
-
+        self.legend_bool=0
         # 让combobox_3一开始选择第二个
         self.response_mode = 1
         self.widget.comboBox_3.setCurrentIndex(1)
@@ -79,10 +79,13 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.actionTime_Domain.setChecked(True)
         self.actionFrequency_Domain_2.setChecked(True)
 
+        self.actionLegend.setCheckable(True)
+        self.actionLegend.setChecked(False)
+
         # 点击菜单栏的选项，显示或者隐藏对应的图像
         self.actionTime_Domain.triggered.connect(self.show_time)
         self.actionFrequency_Domain_2.triggered.connect(self.show_freq)
-
+        self.actionLegend.triggered.connect(self.show_legend)
         # 点击复制按钮复制一个窗
         self.pushButton_4.clicked.connect(self.copy_window)
 
@@ -221,9 +224,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 fft_vals = np.log10(fft_vals + 1e-15) * 20
             elif self.response_mode == 0:
                 ax2.set_ylabel('Magnitude')
-
-                print(1)
-
             ax2.plot(freqs_normalized, fft_vals, color=COLORS[j])
             ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
 
@@ -237,7 +237,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 ax2.set_ylim([0, 50])
             ax2.set_xscale('log')
             ax2.set_xlim([1e-3, 1])
-
         elif self.log_mode==0:
             ax2.set_yscale('linear')
             if self.combo_index==0:
@@ -247,15 +246,21 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             elif self.combo_index==2:
                 ax2.set_xlim([-1, 1])
 
+       # 设置图例
+        if self.legend_bool==1:
+            j = 0
+            legend_name = []
+            # 显示图例，用窗口的名字
+            for i in self.listWidget.selectedItems():
+                legend_name.append(i.text())
+            ax1.legend(legend_name, loc='upper right')
+            ax2.legend(legend_name)
 
         ax1.grid(True)
         ax1.set_xlabel('Time')
         ax1.set_ylabel('Amplitude')
         ax1.set_title('Time Domain')
         self.canvas1.draw()
-
-
-
 
         ax2.grid(True)
         ax2.set_xlabel('Frequency')
@@ -281,6 +286,15 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         if self.listWidget.currentItem():
             self.window[self.window_name+'_copy']={'type':self.window[self.window_name]['type'],'length':self.window[self.window_name]['length'],'s_mode':self.window[self.window_name]['s_mode']}
             self.listWidget.addItem(self.window_name+'_copy')
+
+    def show_legend(self):
+        # 如果actionLegend被选中，显示图例
+        if self.actionLegend.isChecked():
+            self.legend_bool = 1
+            self.plot()
+        else:
+            self.legend_bool = 0
+            self.plot()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

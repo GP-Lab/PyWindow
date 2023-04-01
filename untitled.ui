@@ -268,10 +268,19 @@
     <addaction name="actionTime_Domain"/>
     <addaction name="actionFrequency_Domain_2"/>
     <addaction name="separator"/>
+    <addaction name="actionLegend"/>
+    <addaction name="separator"/>
     <addaction name="actionAnalyse_Parameter"/>
+   </widget>
+   <widget class="QMenu" name="menuTool">
+    <property name="title">
+     <string>Tool</string>
+    </property>
+    <addaction name="actionFull_View"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuTool"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionTime_Domain">
@@ -292,6 +301,16 @@
   <action name="actionAnalyse_Parameter">
    <property name="text">
     <string>Analyse Parameter</string>
+   </property>
+  </action>
+  <action name="actionFull_View">
+   <property name="text">
+    <string>Full View</string>
+   </property>
+  </action>
+  <action name="actionLegend">
+   <property name="text">
+    <string>Legend</string>
    </property>
   </action>
  </widget>
