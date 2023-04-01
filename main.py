@@ -137,15 +137,18 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.i+=1
 
     def listwidget_del(self):
-        # 获得删除的窗口名字，并且在字典中删除
-        self.window_name = self.listWidget.currentItem().text()
-        self.window.pop(self.window_name)
-        self.listWidget.takeItem(self.listWidget.currentRow())
+        # 仅在选中窗口的情况下
+        if self.listWidget.currentItem():
+            # 获得删除的窗口名字，并且在字典中删除
+            self.window_name = self.listWidget.currentItem().text()
+            self.window.pop(self.window_name)
+            self.listWidget.takeItem(self.listWidget.currentRow())
 
-        # 删除后，把lineEdit和comboBox清空
-        self.lineEdit.setText('')
-        self.comboBox.setCurrentText('')
-        self.lineEdit_3.setText('')
+            # 删除后，把lineEdit和comboBox清空
+            self.lineEdit.setText('')
+            self.comboBox.setCurrentText('')
+            self.lineEdit_3.setText('')
+
 
     def listwidget_click(self):
 
@@ -276,13 +279,13 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
     def copy_window(self):
         if self.listWidget.currentItem():
-            self.window[self.window_name+'_copy']={'type':self.window[self.window_name]['type'],'length':self.window[self.window_name]['length']}
+            self.window[self.window_name+'_copy']={'type':self.window[self.window_name]['type'],'length':self.window[self.window_name]['length'],'s_mode':self.window[self.window_name]['s_mode']}
             self.listWidget.addItem(self.window_name+'_copy')
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     QApplication.setStyle('Fusion')
     mainWindow = MainWindow()
-    apply_stylesheet(app, theme='dark_blue.xml')
+    # apply_stylesheet(app, theme='dark_blue.xml')
     mainWindow.show()
     sys.exit(app.exec_())
