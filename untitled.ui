@@ -261,6 +261,8 @@
      <string>File</string>
     </property>
     <addaction name="actionExport"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -312,6 +314,21 @@
   <action name="actionLegend">
    <property name="text">
     <string>Legend</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionText_File">
+   <property name="text">
+    <string>Text-File</string>
+   </property>
+  </action>
+  <action name="actionMat_File">
+   <property name="text">
+    <string>Mat-File</string>
    </property>
   </action>
   <action name="actionExport">
