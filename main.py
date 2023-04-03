@@ -111,6 +111,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.export.pushButton_2.clicked.connect(self.export.close)
         # 点击Exit退出程序
         self.actionExit.triggered.connect(self.close)
+        # 点击About弹出一个版本信息
+        self.actionAbout.triggered.connect(self.about)
     def setting_enable(self):
         if self.comboBox.currentIndex()==4:
             self.lineEdit_2.setEnabled(True)
@@ -186,27 +188,33 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.comboBox_2.setCurrentText(self.window[self.window_name]['s_mode'])
 
     def window_change(self):
-        # 当parameter可用时，一定要填入参数
-        if self.lineEdit_2.isEnabled():
-            try:
-                number=float(self.lineEdit_2.text())
-            except:
+        # 先判断是否有窗口被选中，如果没有就是再重新创建一个窗口
+        if self.listWidget.currentItem():
+            # 当parameter可用时，一定要填入参数
+            if self.lineEdit_2.isEnabled():
+                try:
+                    # 判断是否为数字
+                    number = float(self.lineEdit_2.text())
+                except:
+                    QMessageBox.warning(self, 'Warning', 'Please input number!', QMessageBox.Yes)
+                    return
+            # 检测是否为数字参数，否则弹出窗口警告
+            if self.lineEdit.text() != '' and self.lineEdit_3.text().isdigit():
+                # 获取lineEdit,comboBox,lineEdit_3的值,,并且更新到字典中
+                self.window_name = self.lineEdit.text()
+                self.window_type = self.comboBox.currentText()
+                self.window_length = int(self.lineEdit_3.text())
+                self.s_mode = self.comboBox_2.currentText()
+                self.window[self.window_name] = {'type': self.window_type, 'length': self.window_length,
+                                                 's_mode': self.s_mode}
+                # 更新listWidget的显示
+                self.listWidget.currentItem().setText(self.window_name)
+                # 更新图像
+                self.plot()
+            else:
                 QMessageBox.warning(self, 'Warning', 'Please input number!', QMessageBox.Yes)
-                return
-        # 检测是否为数字参数，否则弹出窗口警告
-        if self.lineEdit.text()!='' and self.lineEdit_3.text().isdigit():
-            # 获取lineEdit,comboBox,lineEdit_3的值,,并且更新到字典中
-            self.window_name=self.lineEdit.text()
-            self.window_type=self.comboBox.currentText()
-            self.window_length=int(self.lineEdit_3.text())
-            self.s_mode=self.comboBox_2.currentText()
-            self.window[self.window_name]={'type':self.window_type,'length':self.window_length,'s_mode':self.s_mode}
-            # 更新listWidget的显示
-            self.listWidget.currentItem().setText(self.window_name)
-            # 更新图像
-            self.plot()
         else:
-            QMessageBox.warning(self, 'Warning', 'Please input number!', QMessageBox.Yes)
+            QMessageBox.warning(self, 'Warning', 'Please select a window!', QMessageBox.Yes)
 
     def plot(self):
 
@@ -454,7 +462,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             # 将窗函数保存到mat文件
         if self.export.comboBox.currentIndex() == 1:
             sio.savemat(save_path, data_dict)
-
+    def about(self):
+        QMessageBox.about(self, "About", "pywindow Dev edition\nEmail:purehyacinth@Outlook.com")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
