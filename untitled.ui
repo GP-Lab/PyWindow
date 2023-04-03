@@ -185,6 +185,21 @@
            <string>taylor</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>chebwin</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>taylor</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>tukey</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item row="0" column="1">

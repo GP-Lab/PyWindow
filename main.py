@@ -114,13 +114,31 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         # 点击About弹出一个版本信息
         self.actionAbout.triggered.connect(self.about)
     def setting_enable(self):
-        if self.comboBox.currentIndex()==4:
+        # 当选中窗Kaiser时
+        if self.comboBox.currentText()=='kaiser':
             self.lineEdit_2.setEnabled(True)
             self.label_4.setText('beta')
+        # 当选中窗tukey时
+        elif self.comboBox.currentText()=='tukey':
+            self.lineEdit_2.setEnabled(True)
+            self.label_4.setText('alpha')
+        # taylor窗
+        elif self.comboBox.currentText()=='taylor':
+            self.lineEdit_2.setEnabled(True)
+            self.label_4.setText('nbar')
+        # 当选中窗chebwin时
+        elif self.comboBox.currentText()=='chebwin':
+            self.lineEdit_2.setEnabled(True)
+            self.label_4.setText('attn')
+         # Gaussian窗
+        elif self.comboBox.currentText()=='gaussian':
+            self.lineEdit_2.setEnabled(True)
+            self.label_4.setText('std')
         else:
             self.lineEdit_2.setEnabled(False)
             self.lineEdit_4.setEnabled(False)
             self.label_4.setText('Parameter')
+            self.label_5.setText('Parameter2')
     def apply(self):
         # 获取点数
         self.point_num = int(self.widget.lineEdit.text())
@@ -150,7 +168,10 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.window_type='hann'
         self.window_length=64
         self.s_mode='symmetric'
-        self.window[self.window_name]={'type':self.window_type,'length':self.window_length,'s_mode':self.s_mode}
+        self.parameter_1=''
+        self.parameter_2=''
+        self.window[self.window_name]={'type':self.window_type,'length':self.window_length,'s_mode':self.s_mode,
+                                       'parameter_1':self.parameter_1,'parameter_2':self.parameter_2}
 
     def listwidget_add(self):
 
@@ -186,7 +207,9 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.lineEdit_3.setText(str(self.window[self.window_name]['length']))
         # 显示对称模式
         self.comboBox_2.setCurrentText(self.window[self.window_name]['s_mode'])
-
+        # 显示参数
+        self.lineEdit_2.setText(str(self.window[self.window_name]['parameter_1']))
+        self.lineEdit_4.setText(str(self.window[self.window_name]['parameter_2']))
     def window_change(self):
         # 先判断是否有窗口被选中，如果没有就是再重新创建一个窗口
         if self.listWidget.currentItem():
@@ -204,9 +227,15 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 self.window_name = self.lineEdit.text()
                 self.window_type = self.comboBox.currentText()
                 self.window_length = int(self.lineEdit_3.text())
+
+                if self.lineEdit_2.isEnabled():
+                    self.parameter_1 = float(self.lineEdit_2.text())
+                if self.lineEdit_4.isEnabled():
+                    self.parameter_2 = float(self.lineEdit_4.text())
+
                 self.s_mode = self.comboBox_2.currentText()
                 self.window[self.window_name] = {'type': self.window_type, 'length': self.window_length,
-                                                 's_mode': self.s_mode}
+                                                 's_mode': self.s_mode,'parameter_1': self.parameter_1,'parameter_2': self.parameter_2}
                 # 更新listWidget的显示
                 self.listWidget.currentItem().setText(self.window_name)
                 # 更新图像
@@ -229,15 +258,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             t = np.arange(self.window[i.text()]['length'])
             # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
 
-            if self.comboBox.currentText() == 'kaiser':
-                window = get_window((self.window[i.text()]['type'], float(self.lineEdit_2.text())),
-                                    int(self.window[i.text()]['length']))
-            else:
-                if self.window[i.text()]['s_mode']=='symmetric':
-                    s_mode=False
-                elif self.window[i.text()]['s_mode']=='periodic':
-                    s_mode=True
-                window = get_window(self.window[i.text()]['type'], int(self.window[i.text()]['length']),fftbins=s_mode)
+            window=self.getwindow(i)
 
             ax1.plot(t, window)
             # 计算频域
@@ -252,6 +273,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 fft_vals = np.log10(fft_vals + 1e-15) * 20
             elif self.response_mode == 0:
                 ax2.set_ylabel('Magnitude')
+
             ax2.plot(freqs_normalized, fft_vals, color=COLORS[j])
             ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
 
@@ -276,7 +298,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
        # 设置图例
         if self.legend_bool==1:
-            j = 0
             legend_name = []
             # 显示图例，用窗口的名字
             for i in self.listWidget.selectedItems():
@@ -337,15 +358,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             t = np.arange(self.window[i.text()]['length'])
             # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
 
-            if self.comboBox.currentText() == 'kaiser':
-                window = get_window((self.window[i.text()]['type'], float(self.lineEdit_2.text())),
-                                    int(self.window[i.text()]['length']))
-            else:
-                if self.window[i.text()]['s_mode'] == 'symmetric':
-                    s_mode = False
-                elif self.window[i.text()]['s_mode'] == 'periodic':
-                    s_mode = True
-                window = get_window(self.window[i.text()]['type'], int(self.window[i.text()]['length']), fftbins=s_mode)
+            window=self.getwindow(i)
 
             ax1.plot(t, window)
             # 计算频域
@@ -397,7 +410,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         ax1.set_ylabel('Amplitude')
         ax1.set_title('Time Domain')
 
-
         ax2.grid(True)
         ax2.set_xlabel('Frequency')
         ax2.set_ylabel('Magnitude(dB)')
@@ -430,9 +442,9 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         # 将窗函数保存到文件
         for i in self.listWidget.selectedItems():
             # 获取窗口
-            if self.comboBox.currentText() == 'kaiser':
-                window = get_window((self.window[i.text()]['type'], float(self.lineEdit_2.text())),
-                                    int(self.window[i.text()]['length']))
+            if self.comboBox.currentText() == 'kaiser' or self.comboBox.currentText() == 'gaussian' or self.comboBox.currentText() == 'tukey'or self.comboBox.currentText() == 'taylor' or self.comboBox.currentText() == 'chebwin':
+                window = get_window((self.window[i.text()]['type'], float(self.window[i.text()]['parameter_1'])), int(self.window[i.text()]['length']))
+
             else:
                 if self.window[i.text()]['s_mode'] == 'symmetric':
                     s_mode = False
@@ -465,6 +477,37 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
     def about(self):
         QMessageBox.about(self, "About", "pywindow Dev edition\nEmail:purehyacinth@Outlook.com")
 
+    def getwindow(self,i):
+        # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
+        window_type = self.window[i.text()]['type']
+        if window_type == 'kaiser' or window_type == 'gaussian' or window_type == 'tukey' or window_type == 'taylor' or window_type == 'chebwin':
+
+            if window_type == 'kaiser':
+                window_param = self.window[i.text()]['parameter_1']
+            elif window_type == 'gaussian':
+                window_param = float(self.window[i.text()]['parameter_1'])
+            elif window_type == 'tukey':
+                window_param = float(self.window[i.text()]['parameter_1'])
+            elif window_type == 'taylor':
+                window_param = int(self.window[i.text()]['parameter_1'])
+                # 判断是否小于1
+                if window_param < 1:
+                    QMessageBox.warning(self, 'Warning', 'Taylor window parameter must be greater than 1!', QMessageBox.Yes)
+                    return
+            elif window_type == 'chebwin':
+                window_param = float(self.window[i.text()]['parameter_1']), int(
+                    self.window[i.text()]['parameter_2'])
+            window_length = int(self.window[i.text()]['length'])
+            window = get_window((window_type, window_param), Nx=window_length)
+
+        else:
+            if self.window[i.text()]['s_mode']=='symmetric':
+                s_mode=False
+            elif self.window[i.text()]['s_mode']=='periodic':
+                s_mode=True
+            window = get_window(self.window[i.text()]['type'], int(self.window[i.text()]['length']),fftbins=s_mode)
+
+        return window
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     QApplication.setStyle('Fusion')
