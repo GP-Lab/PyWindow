@@ -103,11 +103,12 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.actionLegend.triggered.connect(self.show_legend)
         # 点击复制按钮复制一个窗
         self.pushButton_4.clicked.connect(self.copy_window)
-
         self.export.pushButton.clicked.connect(self.export_window)
 
         # combo选中窗Kaiser后，lineEdit_2可用
         self.comboBox.currentIndexChanged.connect(self.setting_enable)
+        # 点击close按钮关闭窗口
+        self.export.pushButton_2.clicked.connect(self.export.close)
         # 点击Exit退出程序
         self.actionExit.triggered.connect(self.close)
     def setting_enable(self):
