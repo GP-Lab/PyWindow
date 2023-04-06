@@ -54,9 +54,9 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.point_num=512
         self.combo_index=0
         self.log_mode=0
-        self.lineEdit_2.setEnabled(False)
-        self.lineEdit_4.setEnabled(False)
         self.legend_bool=0
+
+        self.listwidget_forbid()
         # 让combobox_3一开始选择第二个
         self.response_mode = 1
         self.widget.comboBox_3.setCurrentIndex(1)
@@ -106,14 +106,27 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.export.pushButton.clicked.connect(self.export_window)
 
         # combo选中窗Kaiser后，lineEdit_2可用
-        self.comboBox.currentIndexChanged.connect(self.setting_enable)
+        self.comboBox.currentTextChanged.connect(self.setting_enable)
         # 点击close按钮关闭窗口
         self.export.pushButton_2.clicked.connect(self.export.close)
         # 点击Exit退出程序
         self.actionExit.triggered.connect(self.close)
         # 点击About弹出一个版本信息
         self.actionAbout.triggered.connect(self.about)
+        # lineEdit值发生改变时，pushButton_3可用
+        self.lineEdit.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
+        self.comboBox.currentIndexChanged.connect(lambda: self.pushButton_3.setEnabled(True))
+        self.lineEdit_2.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
+        self.lineEdit_3.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
+        self.comboBox_2.currentIndexChanged.connect(lambda: self.pushButton_3.setEnabled(True))
+        self.lineEdit_4.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
+
     def setting_enable(self):
+        self.lineEdit.setEnabled(True)
+        self.comboBox.setEnabled(True)
+        self.lineEdit_3.setEnabled(True)
+        self.comboBox_2.setEnabled(True)
+        self.pushButton_3.setEnabled(False)
         # 当选中窗Kaiser时
         if self.comboBox.currentText()=='kaiser':
             self.lineEdit_2.setEnabled(True)
@@ -139,6 +152,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             self.lineEdit_4.setEnabled(False)
             self.label_4.setText('Parameter')
             self.label_5.setText('Parameter2')
+
     def apply(self):
         # 获取点数
         self.point_num = int(self.widget.lineEdit.text())
@@ -195,7 +209,19 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             self.comboBox.setCurrentText('')
             self.lineEdit_3.setText('')
 
+        self.listwidget_forbid()
 
+        # 没有选中窗口时，lineEdit和lineEdit_3不可用和comboBox和comboBox_2不可用
+    def listwidget_forbid(self):
+        self.lineEdit.setEnabled(False)
+        self.lineEdit_3.setEnabled(False)
+        self.comboBox.setEnabled(False)
+        self.comboBox.setCurrentText('')
+        self.comboBox_2.setCurrentText('')
+        self.comboBox_2.setEnabled(False)
+        self.lineEdit_2.setEnabled(False)
+        self.lineEdit_4.setEnabled(False)
+        self.pushButton_3.setEnabled(False)
     def listwidget_click(self):
 
         self.window_name=self.listWidget.currentItem().text()
@@ -210,8 +236,9 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         # 显示参数
         self.lineEdit_2.setText(str(self.window[self.window_name]['parameter_1']))
         self.lineEdit_4.setText(str(self.window[self.window_name]['parameter_2']))
+        self.setting_enable()
+
     def window_change(self):
-        # 先判断是否有窗口被选中，如果没有就是再重新创建一个窗口
         if self.listWidget.currentItem():
             # 当parameter可用时，一定要填入参数
             if self.lineEdit_2.isEnabled():
@@ -224,6 +251,11 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             # 检测是否为数字参数，否则弹出窗口警告
             if self.lineEdit.text() != '' and self.lineEdit_3.text().isdigit():
                 # 获取lineEdit,comboBox,lineEdit_3的值,,并且更新到字典中
+
+                #同一名字不能存在第二个
+                if self.lineEdit.text() in self.window.keys() and self.lineEdit.text()!=self.window_name:
+                    QMessageBox.warning(self, 'Warning', 'The name already exists!', QMessageBox.Yes)
+                    return
                 self.window_name = self.lineEdit.text()
                 self.window_type = self.comboBox.currentText()
                 self.window_length = int(self.lineEdit_3.text())
@@ -335,7 +367,12 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
     def copy_window(self):
         if self.listWidget.currentItem():
-            self.window[self.window_name+'_copy']={'type':self.window[self.window_name]['type'],'length':self.window[self.window_name]['length'],'s_mode':self.window[self.window_name]['s_mode']}
+            # 如果名字重复，不进行复制
+            if self.window_name+'_copy' in self.window.keys():
+                QMessageBox.warning(self, 'Warning', 'The name is already exist!', QMessageBox.Yes)
+                return
+            self.window[self.window_name+'_copy']={'type':self.window[self.window_name]['type'],'length':self.window[self.window_name]['length'],'s_mode':self.window[self.window_name]['s_mode'],
+                                       'parameter_1':self.window[self.window_name]['parameter_1'],'parameter_2':self.window[self.window_name]['parameter_2']}
             self.listWidget.addItem(self.window_name+'_copy')
 
     def show_legend(self):
