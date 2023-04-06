@@ -113,12 +113,12 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.actionExit.triggered.connect(self.close)
         # 点击About弹出一个版本信息
         self.actionAbout.triggered.connect(self.about)
-        # lineEdit值发生改变时，pushButton_3可用
+        # 参数值发生改变时，pushButton_3可用
         self.lineEdit.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
-        self.comboBox.currentIndexChanged.connect(lambda: self.pushButton_3.setEnabled(True))
+        self.comboBox.currentTextChanged.connect(lambda: self.pushButton_3.setEnabled(True))
         self.lineEdit_2.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
         self.lineEdit_3.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
-        self.comboBox_2.currentIndexChanged.connect(lambda: self.pushButton_3.setEnabled(True))
+        self.comboBox_2.currentTextChanged.connect(lambda: self.pushButton_3.setEnabled(True))
         self.lineEdit_4.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
 
     def setting_enable(self):
@@ -272,6 +272,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 self.listWidget.currentItem().setText(self.window_name)
                 # 更新图像
                 self.plot()
+                # 设置pushButton_3状态
+                self.pushButton_3.setEnabled(False)
             else:
                 QMessageBox.warning(self, 'Warning', 'Please input number!', QMessageBox.Yes)
         else:
@@ -290,8 +292,10 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             t = np.arange(self.window[i.text()]['length'])
             # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
 
-            window=self.getwindow(i)
-
+            try:
+                window=self.getwindow(i)
+            except Exception as e:
+                return
             ax1.plot(t, window)
             # 计算频域
             freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
@@ -515,6 +519,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         QMessageBox.about(self, "About", "pywindow Dev edition\nEmail:purehyacinth@Outlook.com")
 
     def getwindow(self,i):
+        # 用于退出函数
+        error_code = 0
         # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
         window_type = self.window[i.text()]['type']
         if window_type == 'kaiser' or window_type == 'gaussian' or window_type == 'tukey' or window_type == 'taylor' or window_type == 'chebwin':
@@ -530,12 +536,13 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 # 判断是否小于1
                 if window_param < 1:
                     QMessageBox.warning(self, 'Warning', 'Taylor window parameter must be greater than 1!', QMessageBox.Yes)
-                    return
+                    error_code=1
             elif window_type == 'chebwin':
                 window_param = float(self.window[i.text()]['parameter_1']), int(
                     self.window[i.text()]['parameter_2'])
-            window_length = int(self.window[i.text()]['length'])
-            window = get_window((window_type, window_param), Nx=window_length)
+            if error_code!=1:
+                window_length = int(self.window[i.text()]['length'])
+                window = get_window((window_type, window_param), Nx=window_length)
 
         else:
             if self.window[i.text()]['s_mode']=='symmetric':
