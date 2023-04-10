@@ -1,14 +1,6 @@
-import gradio as gr
-
-def greet(name):
-    return "Hello, " + name + "!"
-
-io = gr.Interface(
-    greet,
-    "textbox",
-    gr.inputs.Textbox(label="Enter your name here..."),
-    "textbox",
-    gr.outputs.Textbox(label="Greeting")
-)
-
-io.launch()
+from scipy.signal import get_window
+from scipy.signal.windows import chebwin
+window_length = 1024
+attenuation = 60
+window=get_window(('chebwin',attenuation),window_length)
+print(window)

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>850</width>
-    <height>589</height>
+    <height>659</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,21 +15,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0" colspan="2">
-     <widget class="QGroupBox" name="groupBox_4">
-      <property name="title">
-       <string>Window Viewer</string>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QGraphicsView" name="graphicsView"/>
-       </item>
-       <item>
-        <widget class="QGraphicsView" name="graphicsView_2"/>
-       </item>
-      </layout>
-     </widget>
-    </item>
     <item row="1" column="0">
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
@@ -260,6 +245,21 @@
       </layout>
      </widget>
     </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QGroupBox" name="groupBox_4">
+      <property name="title">
+       <string>Window Viewer</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QGraphicsView" name="graphicsView"/>
+       </item>
+       <item>
+        <widget class="QGraphicsView" name="graphicsView_2"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -301,6 +301,8 @@
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="separator"/>
+    <addaction name="actionGpt"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -308,6 +310,19 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionLegend_2"/>
+   <addaction name="actionFull_View_2"/>
+  </widget>
   <action name="actionTime_Domain">
    <property name="text">
     <string>Time Domain</string>
@@ -333,11 +348,6 @@
     <string>Full View</string>
    </property>
   </action>
-  <action name="actionLegend">
-   <property name="text">
-    <string>Legend</string>
-   </property>
-  </action>
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
@@ -361,6 +371,34 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionGpt">
+   <property name="text">
+    <string>Gpt</string>
+   </property>
+  </action>
+  <action name="actionLegend_2">
+   <property name="icon">
+    <iconset>
+     <normaloff>C:/Users/lee yun/Desktop/icon/checklist.png</normaloff>C:/Users/lee yun/Desktop/icon/checklist.png</iconset>
+   </property>
+   <property name="text">
+    <string>Legend</string>
+   </property>
+  </action>
+  <action name="actionLegend">
+   <property name="text">
+    <string>Legend</string>
+   </property>
+  </action>
+  <action name="actionFull_View_2">
+   <property name="icon">
+    <iconset>
+     <normaloff>C:/Users/lee yun/Desktop/icon/full-screen (1).png</normaloff>C:/Users/lee yun/Desktop/icon/full-screen (1).png</iconset>
+   </property>
+   <property name="text">
+    <string>Full View</string>
    </property>
   </action>
  </widget>

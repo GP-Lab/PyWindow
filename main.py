@@ -6,13 +6,13 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMe
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.colors as mcolors
-
+import gradio as gr
 from untitled import Ui_MainWindow
 from new_untitled import Ui_Form
 from export_menu import Ui_Form as Ui_Form_2
 from scipy.signal import get_window
 from qt_material import apply_stylesheet
-
+import requests
 class Widget(QWidget,Ui_Form):
     def __init__(self):
         super().__init__()
@@ -90,17 +90,25 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
         self.actionTime_Domain.setChecked(True)
         self.actionFrequency_Domain_2.setChecked(True)
+        self.actionFrequency_Domain_2.setChecked(True)
 
+        # 把actionLegend和actionLegend_2绑定在一起
+        self.actionLegend_2.setCheckable(True)
+        self.actionLegend_2.setChecked(False)
         self.actionLegend.setCheckable(True)
         self.actionLegend.setChecked(False)
+        self.actionLegend_2.triggered.connect(self.actionLegend.setChecked)
+        self.actionLegend.triggered.connect(self.actionLegend_2.setChecked)
+
 
         # 点击Tool的Full analysis，弹出一个窗口
         self.actionFull_View.triggered.connect(self.full_analysis)
-
+        self.actionFull_View_2.triggered.connect(self.full_analysis)
         # 点击菜单栏的选项，显示或者隐藏对应的图像
         self.actionTime_Domain.triggered.connect(self.show_time)
         self.actionFrequency_Domain_2.triggered.connect(self.show_freq)
         self.actionLegend.triggered.connect(self.show_legend)
+        self.actionLegend_2.triggered.connect(self.show_legend)
         # 点击复制按钮复制一个窗
         self.pushButton_4.clicked.connect(self.copy_window)
         self.export.pushButton.clicked.connect(self.export_window)
@@ -120,7 +128,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.lineEdit_3.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
         self.comboBox_2.currentTextChanged.connect(lambda: self.pushButton_3.setEnabled(True))
         self.lineEdit_4.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
-
+        # 点击gpt按钮，弹出一个窗口
+        self.actionGpt.triggered.connect(self.gpt)
     def setting_enable(self):
         self.lineEdit.setEnabled(True)
         self.comboBox.setEnabled(True)
@@ -552,6 +561,28 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             window = get_window(self.window[i.text()]['type'], int(self.window[i.text()]['length']),fftbins=s_mode)
 
         return window
+
+    def gpt(self):
+    # gradio创建一个终端，有帐号密码输入。有一个人机聊天对话框
+
+        def chatbot(api):
+            # 向API发送请求
+            response = requests.get(api)
+            # 获取API的响应内容
+            bot_response = response.json()['response']
+            # 返回人机对话
+            return bot_response
+
+        # 创建输入框组件
+        api_input = gr.inputs.Textbox(label="输入API")
+
+        # 创建人机对话框组件
+        chatbot_output = gr.outputs.Textbox(label="人机对话")
+
+        # 创建Gradio界面
+        gr.Interface(chatbot, api_input, chatbot_output, title="人机对话", description="输入API，与机器人进行对话").launch()
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     QApplication.setStyle('Fusion')
