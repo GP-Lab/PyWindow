@@ -13,6 +13,7 @@ from export_menu import Ui_Form as Ui_Form_2
 from scipy.signal import get_window
 from qt_material import apply_stylesheet
 import requests
+import gpt_module
 class Widget(QWidget,Ui_Form):
     def __init__(self):
         super().__init__()
@@ -77,9 +78,10 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.pushButton_2.setText('Delete')
         self.pushButton_3.setText('Apply')
         self.pushButton_4.setText('Copy')
-        # 初始创建hann窗，并且选中它
+        # 初始创建hann窗，并且鼠标点击他
         self.listwidget_add()
         self.listWidget.setCurrentRow(0)
+        self.listwidget_click()
         self.plot()
         # 按钮点击创建窗
         self.pushButton.clicked.connect(self.listwidget_add)
@@ -137,7 +139,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.lineEdit_4.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
         # 点击gpt按钮，弹出一个窗口
         self.actionGpt.triggered.connect(self.gpt)
-    
+        # 点击New_window 2按钮，弹出一个窗口
+        self.actionNew_Window_2.triggered.connect(self.new_window)
     def new_window(self):
         self.window[self.i]=MainWindow()
         self.window[self.i].show()
@@ -577,24 +580,22 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         return window
 
     def gpt(self):
-    # gradio创建一个终端，有帐号密码输入。有一个人机聊天对话框
+        # gradio创建一个终端，有帐号密码输入。有一个人机聊天对话框
 
-        def chatbot(api):
-            # 向API发送请求
-            response = requests.get(api)
-            # 获取API的响应内容
-            bot_response = response.json()['response']
+        # 创建输入框组件
+        api_input = gr.components(lines=5, label="输入API")
+
+        def chatbot(api_input):
+            bot_response = gpt_module.get_answer(api_input)
             # 返回人机对话
             return bot_response
 
-        # 创建输入框组件
-        api_input = gr.inputs.Textbox(label="输入API")
-
         # 创建人机对话框组件
-        chatbot_output = gr.outputs.Textbox(label="人机对话")
+        chatbot_output = gr.Textbox(label="人机对话")
 
         # 创建Gradio界面
-        gr.Interface(chatbot, api_input, chatbot_output, title="人机对话", description="输入API，与机器人进行对话").launch()
+        gr.Interface(fn=chatbot, inputs=api_input, outputs=chatbot_output, title="人机对话",
+                     description="输入API，与机器人进行对话").launch()
 
 
 if __name__ == "__main__":
