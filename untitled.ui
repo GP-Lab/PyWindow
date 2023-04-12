@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>850</width>
-    <height>659</height>
+    <height>771</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -247,6 +247,12 @@
     </item>
     <item row="0" column="0" colspan="2">
      <widget class="QGroupBox" name="groupBox_4">
+      <property name="minimumSize">
+       <size>
+        <width>832</width>
+        <height>336</height>
+       </size>
+      </property>
       <property name="title">
        <string>Window Viewer</string>
       </property>
@@ -268,13 +274,14 @@
      <x>0</x>
      <y>0</y>
      <width>850</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionNew_Window"/>
     <addaction name="actionExport"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
@@ -300,9 +307,9 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionAbout"/>
-    <addaction name="separator"/>
     <addaction name="actionGpt"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -399,6 +406,11 @@
    </property>
    <property name="text">
     <string>Full View</string>
+   </property>
+  </action>
+  <action name="actionNew_Window">
+   <property name="text">
+    <string>New Window</string>
    </property>
   </action>
  </widget>

@@ -44,7 +44,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.actionExport.triggered.connect(self.export.show)
         # 点击widget在中的apply按钮，将参数传递到主窗口
         self.widget.pushButton.clicked.connect(self.apply)
-
+        # 点击任务栏中的New Window，弹出一个新的自己
+        self.actionNew_Window.triggered.connect(self.new_window)
         # 创建一个字典用来保存窗口的参数
         self.window={}
 
@@ -56,11 +57,15 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.log_mode=0
         self.legend_bool=0
 
-        self.listwidget_forbid()
+        # 初始禁用一些控件
+        self.lineEdit_2.setEnabled(False)
+        self.lineEdit_4.setEnabled(False)
+
         # 让combobox_3一开始选择第二个
         self.response_mode = 1
         self.widget.comboBox_3.setCurrentIndex(1)
-
+        # 根据分辨率调整窗口大小
+        self.adjustSize()
         # 让widget可以被多选
         self.listWidget.setSelectionMode(3)
 
@@ -72,8 +77,10 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.pushButton_2.setText('Delete')
         self.pushButton_3.setText('Apply')
         self.pushButton_4.setText('Copy')
-
-
+        # 初始创建hann窗，并且选中它
+        self.listwidget_add()
+        self.listWidget.setCurrentRow(0)
+        self.plot()
         # 按钮点击创建窗
         self.pushButton.clicked.connect(self.listwidget_add)
         self.pushButton_2.clicked.connect(self.listwidget_del)
@@ -130,6 +137,12 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.lineEdit_4.textChanged.connect(lambda: self.pushButton_3.setEnabled(True))
         # 点击gpt按钮，弹出一个窗口
         self.actionGpt.triggered.connect(self.gpt)
+    
+    def new_window(self):
+        self.window[self.i]=MainWindow()
+        self.window[self.i].show()
+        self.i+=1
+        
     def setting_enable(self):
         self.lineEdit.setEnabled(True)
         self.comboBox.setEnabled(True)
@@ -369,13 +382,14 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.canvas1 = FigureCanvas(self.fig1)
         layout = QVBoxLayout()  # 垂直布局
         layout.addWidget(self.canvas1)
-        self.fig1.subplots_adjust(left=0.2, bottom=0.2, right=0.9, top=0.9, wspace=None, hspace=None)
+        self.fig1.subplots_adjust(left=0.2, bottom=0.3, right=0.9, top=0.8, wspace=None, hspace=None)
         self.graphicsView.setLayout(layout)  # 设置好布局之后调用函数
 
         self.fig2 = plt.figure()
         self.canvas2 = FigureCanvas(self.fig2)
         layout = QVBoxLayout()  # 垂直布局
         layout.addWidget(self.canvas2)
+        self.fig2.subplots_adjust(left=0.2, bottom=0.3, right=0.9, top=0.8, wspace=None, hspace=None)
         self.graphicsView_2.setLayout(layout)  # 设置好布局之后调用函数
 
     def copy_window(self):
