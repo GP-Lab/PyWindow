@@ -49,7 +49,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         # 创建一个字典用来保存窗口的参数
         self.window={}
 
-        self.windows={}
+        self.windows=[]
         # 一些参数的初始化
         self.i = 1
         self.plot_deafault()
