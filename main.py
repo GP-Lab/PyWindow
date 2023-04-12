@@ -49,6 +49,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         # 创建一个字典用来保存窗口的参数
         self.window={}
 
+        self.windows={}
         # 一些参数的初始化
         self.i = 1
         self.plot_deafault()
@@ -139,10 +140,10 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.actionGpt.triggered.connect(self.gpt)
     
     def new_window(self):
-        self.window[self.i]=MainWindow()
-        self.window[self.i].show()
+        self.windows[self.i]=MainWindow()
+        self.windows[self.i].show()
         self.i+=1
-        
+
     def setting_enable(self):
         self.lineEdit.setEnabled(True)
         self.comboBox.setEnabled(True)
