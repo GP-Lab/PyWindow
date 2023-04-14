@@ -1,6 +1,6 @@
 name: env_pywindow
 dependencies:
-  - python=3.7
+  - python=3.8
   - pip=22.3.1
   - pip:
       - numpy
@@ -9,4 +9,5 @@ dependencies:
       - pyqt5
       - pyqt5-tools
       - qt-material
-
+      - gradio
+      - langchain
