@@ -274,7 +274,7 @@
      <x>0</x>
      <y>0</y>
      <width>850</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -327,6 +327,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionNew_Window_2"/>
    <addaction name="actionLegend_2"/>
    <addaction name="actionFull_View_2"/>
   </widget>
@@ -388,7 +389,7 @@
   <action name="actionLegend_2">
    <property name="icon">
     <iconset>
-     <normaloff>C:/Users/lee yun/Desktop/icon/checklist.png</normaloff>C:/Users/lee yun/Desktop/icon/checklist.png</iconset>
+     <normaloff>icon/checklist.png</normaloff>icon/checklist.png</iconset>
    </property>
    <property name="text">
     <string>Legend</string>
@@ -402,13 +403,22 @@
   <action name="actionFull_View_2">
    <property name="icon">
     <iconset>
-     <normaloff>C:/Users/lee yun/Desktop/icon/full-screen (1).png</normaloff>C:/Users/lee yun/Desktop/icon/full-screen (1).png</iconset>
+     <normaloff>icon/full-screen (1).png</normaloff>icon/full-screen (1).png</iconset>
    </property>
    <property name="text">
     <string>Full View</string>
    </property>
   </action>
   <action name="actionNew_Window">
+   <property name="text">
+    <string>New Window</string>
+   </property>
+  </action>
+  <action name="actionNew_Window_2">
+   <property name="icon">
+    <iconset>
+     <normaloff>icon/new-window.png</normaloff>icon/new-window.png</iconset>
+   </property>
    <property name="text">
     <string>New Window</string>
    </property>
