@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'untitled.ui'
+# Form implementation generated from reading ui file 'Main_window.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -180,6 +180,11 @@ class Ui_MainWindow(object):
         icon2.addPixmap(QtGui.QPixmap("icon/new-window.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionNew_Window_2.setIcon(icon2)
         self.actionNew_Window_2.setObjectName("actionNew_Window_2")
+        self.actionExport_2 = QtWidgets.QAction(MainWindow)
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap("icon/export.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionExport_2.setIcon(icon3)
+        self.actionExport_2.setObjectName("actionExport_2")
         self.menuFile.addAction(self.actionNew_Window)
         self.menuFile.addAction(self.actionExport)
         self.menuFile.addSeparator()
@@ -199,6 +204,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuTool.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
         self.toolBar.addAction(self.actionNew_Window_2)
+        self.toolBar.addAction(self.actionExport_2)
         self.toolBar.addAction(self.actionLegend_2)
         self.toolBar.addAction(self.actionFull_View_2)
 
@@ -264,3 +270,4 @@ class Ui_MainWindow(object):
         self.actionFull_View_2.setText(_translate("MainWindow", "Full View"))
         self.actionNew_Window.setText(_translate("MainWindow", "New Window"))
         self.actionNew_Window_2.setText(_translate("MainWindow", "New Window"))
+        self.actionExport_2.setText(_translate("MainWindow", "Export"))

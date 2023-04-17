@@ -7,8 +7,8 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.colors as mcolors
 import gradio as gr
-from untitled import Ui_MainWindow
-from new_untitled import Ui_Form
+from Main_window import Ui_MainWindow
+from Parameter_widget import Ui_Form
 from export_menu import Ui_Form as Ui_Form_2
 from scipy.signal import get_window
 from qt_material import apply_stylesheet
@@ -43,6 +43,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.actionAnalyse_Parameter.triggered.connect(self.widget.show)
         # 点击export按钮，弹出export
         self.actionExport.triggered.connect(self.export.show)
+        self.actionExport_2.triggered.connect(self.export.show)
         # 点击widget在中的apply按钮，将参数传递到主窗口
         self.widget.pushButton.clicked.connect(self.apply)
         # 点击任务栏中的New Window，弹出一个新的自己
