@@ -367,13 +367,13 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             ax2.legend(legend_name)
 
         ax1.grid(True)
-        ax1.set_xlabel('Time')
+        ax1.set_xlabel('Samples')
         ax1.set_ylabel('Amplitude')
         ax1.set_title('Time Domain')
         self.canvas1.draw()
 
         ax2.grid(True)
-        ax2.set_xlabel('Frequency')
+        ax2.set_xlabel('Normalized Frequency ($\\times$$\pi$ rad/sample)')
         ax2.set_ylabel('Magnitude(dB)')
         ax2.set_title('Frequency Domain')
         self.canvas2.draw()
@@ -473,12 +473,12 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             ax2.legend(legend_name)
 
         ax1.grid(True)
-        ax1.set_xlabel('Time')
+        ax1.set_xlabel('Samples')
         ax1.set_ylabel('Amplitude')
         ax1.set_title('Time Domain')
 
         ax2.grid(True)
-        ax2.set_xlabel('Frequency')
+        ax2.set_xlabel('Normalized Frequency ($\\times$$\pi$ rad/sample)')
         ax2.set_ylabel('Magnitude(dB)')
         ax2.set_title('Frequency Domain')
 
