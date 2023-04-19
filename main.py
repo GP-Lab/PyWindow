@@ -11,6 +11,7 @@ from Main_window import Ui_MainWindow
 from Parameter_widget import Ui_Form
 from export_menu import Ui_Form as Ui_Form_2
 from scipy.signal import get_window
+from scipy.fft import fft, fftshift
 from qt_material import apply_stylesheet
 import requests
 # import gpt_module
@@ -324,16 +325,19 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             ax1.plot(t, window)
             # 计算频域
             freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
-            fft_vals = np.abs(np.fft.fft(window, self.point_num)[:self.point_num])
+            a = fft(window, self.point_num)
+            fft_vals = np.abs(a[:self.point_num]/abs(a).max())
             freqs_normalized = freqs / np.pi
-
+            # a = fft(window, self.point_num)
+            # freqs_normalized = np.linspace(0, 1, self.point_num//2)
+            # fft_vals = np.abs(a[0:self.point_num//2]/abs(a).max())
             # 当选中dB模式，将幅度响应转换为dB
             if self.response_mode == 1:
-                ax2.set_ylabel('Magnitude(dB)')
-                ax2.set_ylim([-100, 50])
-                fft_vals = np.log10(fft_vals + 1e-15) * 20
+                ax2.set_ylabel('Normalized magnitude(dB)')
+                ax2.set_ylim([-200, 0])
+                fft_vals = 20*np.log10(np.maximum(fft_vals, 1e-10))
             elif self.response_mode == 0:
-                ax2.set_ylabel('Magnitude')
+                ax2.set_ylabel('Normalized magnitude')
 
             ax2.plot(freqs_normalized, fft_vals, color=COLORS[j])
             ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
@@ -373,8 +377,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.canvas1.draw()
 
         ax2.grid(True)
-        ax2.set_xlabel('Normalized Frequency ($\\times$$\pi$ rad/sample)')
-        ax2.set_ylabel('Magnitude(dB)')
+        ax2.set_xlabel('Normalized frequency ($\\times$$\pi$ rad/sample)')
+        ax2.set_ylabel('Normalized magnitude(dB)')
         ax2.set_title('Frequency Domain')
         self.canvas2.draw()
 
@@ -429,17 +433,17 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
             ax1.plot(t, window)
             # 计算频域
-            freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
-            fft_vals = np.abs(np.fft.fft(window, self.point_num)[:self.point_num])
-            freqs_normalized = freqs / np.pi
+            a = fft(window, self.point_num)
+            freqs_normalized = np.linspace(0, 1, self.point_num//2)
+            fft_vals = np.abs(a[0:self.point_num//2]/abs(a).max())
 
             # 当选中dB模式，将幅度响应转换为dB
             if self.response_mode == 1:
-                ax2.set_ylabel('Magnitude(dB)')
-                ax2.set_ylim([-100, 50])
-                fft_vals = np.log10(fft_vals + 1e-15) * 20
+                ax2.set_ylabel('Normalized magnitude(dB)')
+                ax2.set_ylim([-200, 0])
+                fft_vals = 20*np.log10(np.maximum(fft_vals, 1e-10))
             elif self.response_mode == 0:
-                ax2.set_ylabel('Magnitude')
+                ax2.set_ylabel('Normalized magnitude')
             ax2.plot(freqs_normalized, fft_vals, color=COLORS[j])
             ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
 
@@ -478,8 +482,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         ax1.set_title('Time Domain')
 
         ax2.grid(True)
-        ax2.set_xlabel('Normalized Frequency ($\\times$$\pi$ rad/sample)')
-        ax2.set_ylabel('Magnitude(dB)')
+        ax2.set_xlabel('Normalized frequency ($\\times$$\pi$ rad/sample)')
+        ax2.set_ylabel('Normalized magnitude(dB)')
         ax2.set_title('Frequency Domain')
 
         plt.subplots_adjust(left=0.1, bottom=0.2, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
