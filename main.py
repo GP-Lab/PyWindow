@@ -2,18 +2,18 @@ import datetime
 import sys
 import numpy as np
 import scipy.io as sio
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox, QFileDialog
+from PyQt5.QtCore import QRectF ,Qt
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox, QFileDialog, QGraphicsRectItem
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.colors as mcolors
-import gradio as gr
 from Main_window import Ui_MainWindow
 from Parameter_widget import Ui_Form
 from export_menu import Ui_Form as Ui_Form_2
 from scipy.signal import get_window
 from scipy.fft import fft, fftshift
 from qt_material import apply_stylesheet
-import requests
+
 # import gpt_module
 class Widget(QWidget,Ui_Form):
     def __init__(self):
@@ -156,26 +156,39 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         # 当选中窗Kaiser时
         if self.comboBox.currentText()=='kaiser':
             self.lineEdit_2.setEnabled(True)
+            self.lineEdit_5.setEnabled(False)
             self.label_4.setText('beta')
         # 当选中窗tukey时
         elif self.comboBox.currentText()=='tukey':
             self.lineEdit_2.setEnabled(True)
+            self.lineEdit_5.setEnabled(False)
             self.label_4.setText('alpha')
         # taylor窗
         elif self.comboBox.currentText()=='taylor':
             self.lineEdit_2.setEnabled(True)
+            self.lineEdit_5.setEnabled(False)
             self.label_4.setText('nbar')
         # 当选中窗chebwin时
         elif self.comboBox.currentText()=='chebwin':
             self.lineEdit_2.setEnabled(True)
+            self.lineEdit_5.setEnabled(False)
             self.label_4.setText('attn')
          # Gaussian窗
         elif self.comboBox.currentText()=='gaussian':
             self.lineEdit_2.setEnabled(True)
+            self.lineEdit_5.setEnabled(False)
             self.label_4.setText('std')
+        elif self.comboBox.currentText()=='user defined':
+            self.lineEdit_2.setEnabled(False)
+            self.lineEdit_3.setEnabled(False)
+            self.lineEdit_4.setEnabled(False)
+            self.lineEdit_5.setEnabled(True)
+            self.label_4.setText('Parameter')
+            self.label_5.setText('Parameter2')
         else:
             self.lineEdit_2.setEnabled(False)
             self.lineEdit_4.setEnabled(False)
+            self.lineEdit_5.setEnabled(False)
             self.label_4.setText('Parameter')
             self.label_5.setText('Parameter2')
 
@@ -323,19 +336,21 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             except Exception as e:
                 return
             ax1.plot(t, window)
+
             # 计算频域
             freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
             a = fft(window, self.point_num)
             fft_vals = np.abs(a[:self.point_num]/abs(a).max())
             freqs_normalized = freqs / np.pi
+
             # a = fft(window, self.point_num)
             # freqs_normalized = np.linspace(0, 1, self.point_num//2)
             # fft_vals = np.abs(a[0:self.point_num//2]/abs(a).max())
             # 当选中dB模式，将幅度响应转换为dB
             if self.response_mode == 1:
                 ax2.set_ylabel('Normalized magnitude(dB)')
-                ax2.set_ylim([-200, 0])
-                fft_vals = 20*np.log10(np.maximum(fft_vals, 1e-10))
+                fft_vals = 20 * np.log10(np.abs(fft_vals))
+
             elif self.response_mode == 0:
                 ax2.set_ylabel('Normalized magnitude')
 
@@ -420,51 +435,68 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
     def full_analysis(self):
         plt.close('all')
-        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8, 3))
-
+        if self.actionTime_Domain.isChecked() and self.actionFrequency_Domain_2.isChecked():
+            fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8, 3))
+        elif self.actionTime_Domain.isChecked():
+            fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(8, 3))
+        elif self.actionFrequency_Domain_2.isChecked():
+            fig, ax2 = plt.subplots(nrows=1, ncols=1, figsize=(8, 3))
         COLORS = list(mcolors.TABLEAU_COLORS.values()) + list(mcolors.CSS4_COLORS.values())
         j = 0
         # 遍历listWidget中的窗口，画出所有窗口的图像
         for i in self.listWidget.selectedItems():
-            t = np.arange(self.window[i.text()]['length'])
-            # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
+            window = self.getwindow(i)
 
-            window=self.getwindow(i)
+            if self.actionTime_Domain.isChecked():
+                t = np.arange(self.window[i.text()]['length'])
 
-            ax1.plot(t, window)
-            # 计算频域
-            a = fft(window, self.point_num)
-            freqs_normalized = np.linspace(0, 1, self.point_num//2)
-            fft_vals = np.abs(a[0:self.point_num//2]/abs(a).max())
+                ax1.plot(t, window)
+                ax1.grid(True)
+                ax1.set_xlabel('Samples')
+                ax1.set_ylabel('Amplitude')
+                ax1.set_title('Time Domain')
 
-            # 当选中dB模式，将幅度响应转换为dB
-            if self.response_mode == 1:
+            if self.actionFrequency_Domain_2.isChecked():
+                # 计算频域
+                freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
+                a = fft(window, self.point_num)
+                fft_vals = np.abs(a[:self.point_num] / abs(a).max())
+                freqs_normalized = freqs / np.pi
+
+                # 当选中dB模式，将幅度响应转换为dB
+                if self.response_mode == 1:
+                    ax2.set_ylabel('Normalized magnitude(dB)')
+                    fft_vals = 20 * np.log10(np.abs(fft_vals))
+
+                elif self.response_mode == 0:
+                    ax2.set_ylabel('Normalized magnitude')
+
+                ax2.plot(freqs_normalized, fft_vals, color=COLORS[j])
+                ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
+
+                j += 1
+
+                # 设置坐标轴的范围
+                if self.log_mode == 1:
+                    if self.response_mode == 1:
+                        ax2.set_ylim([-150, 1e2])
+                    elif self.response_mode == 0:
+                        ax2.set_ylim([0, 50])
+                    ax2.set_xscale('log')
+                    ax2.set_xlim([1e-3, 1])
+                elif self.log_mode == 0:
+                    ax2.set_yscale('linear')
+                    if self.combo_index == 0:
+                        ax2.set_xlim([0, 1])
+                    elif self.combo_index == 1:
+                        ax2.set_xlim([0, 2])
+                    elif self.combo_index == 2:
+                        ax2.set_xlim([-1, 1])
+
+                ax2.grid(True)
+                ax2.set_xlabel('Normalized frequency ($\\times$$\pi$ rad/sample)')
                 ax2.set_ylabel('Normalized magnitude(dB)')
-                ax2.set_ylim([-200, 0])
-                fft_vals = 20*np.log10(np.maximum(fft_vals, 1e-10))
-            elif self.response_mode == 0:
-                ax2.set_ylabel('Normalized magnitude')
-            ax2.plot(freqs_normalized, fft_vals, color=COLORS[j])
-            ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
-
-            j += 1
-
-        # 设置坐标轴的范围
-        if self.log_mode == 1:
-            if self.response_mode == 1:
-                ax2.set_ylim([-150, 1e2])
-            elif self.response_mode == 0:
-                ax2.set_ylim([0, 50])
-            ax2.set_xscale('log')
-            ax2.set_xlim([1e-3, 1])
-        elif self.log_mode == 0:
-            ax2.set_yscale('linear')
-            if self.combo_index == 0:
-                ax2.set_xlim([0, 1])
-            elif self.combo_index == 1:
-                ax2.set_xlim([0, 2])
-            elif self.combo_index == 2:
-                ax2.set_xlim([-1, 1])
+                ax2.set_title('Frequency Domain')
 
         # 设置图例
         if self.legend_bool == 1:
@@ -473,18 +505,11 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             # 显示图例，用窗口的名字
             for i in self.listWidget.selectedItems():
                 legend_name.append(i.text())
-            ax1.legend(legend_name, loc='upper right')
-            ax2.legend(legend_name)
-
-        ax1.grid(True)
-        ax1.set_xlabel('Samples')
-        ax1.set_ylabel('Amplitude')
-        ax1.set_title('Time Domain')
-
-        ax2.grid(True)
-        ax2.set_xlabel('Normalized frequency ($\\times$$\pi$ rad/sample)')
-        ax2.set_ylabel('Normalized magnitude(dB)')
-        ax2.set_title('Frequency Domain')
+            # 检测ax1或ax2变量存在吗
+            if self.actionTime_Domain.isChecked():
+                ax1.legend(legend_name, loc='upper right')
+            if self.actionFrequency_Domain_2.isChecked():
+                ax2.legend(legend_name)
 
         plt.subplots_adjust(left=0.1, bottom=0.2, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
         plt.show()
@@ -556,7 +581,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         if window_type == 'kaiser' or window_type == 'gaussian' or window_type == 'tukey' or window_type == 'taylor' or window_type == 'chebwin':
 
             if window_type == 'kaiser':
-                window_param = self.window[i.text()]['parameter_1']
+                window_param = float(self.window[i.text()]['parameter_1'])
             elif window_type == 'gaussian':
                 window_param = float(self.window[i.text()]['parameter_1'])
             elif window_type == 'tukey':
@@ -568,8 +593,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                     QMessageBox.warning(self, 'Warning', 'Taylor window parameter must be greater than 1!', QMessageBox.Yes)
                     error_code=1
             elif window_type == 'chebwin':
-                window_param = float(self.window[i.text()]['parameter_1']), int(
-                    self.window[i.text()]['parameter_2'])
+                window_param = float(self.window[i.text()]['parameter_1'])
             if error_code!=1:
                 window_length = int(self.window[i.text()]['length'])
                 window = get_window((window_type, window_param), Nx=window_length)
