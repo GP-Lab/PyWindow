@@ -15,7 +15,6 @@ from Parameter_widget import Ui_Form
 from export_menu import Ui_Form as Ui_Form_2
 from scipy.signal import get_window
 from scipy.fft import fft, fftshift
-from qt_material import apply_stylesheet
 
 
 # import gpt_module
@@ -595,14 +594,14 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             sio.savemat(save_path, data_dict)
 
     def about(self):
-        QMessageBox.about(self, "About", "pywindow Dev edition\nEmail:purehyacinth@Outlook.com")
+        QMessageBox.about(self, "About", "pywindow v0.1\nGP-Lab\n2023/4/23\nContact:purehyacinth@Outlook.com")
 
     def getwindow(self, i):
         # 用于退出函数
         error_code = 0
         # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
         window_type = self.window[i.text()]['type']
-        if window_type == 'reticular':
+        if window_type == 'rectangular':
             N = self.window[i.text()]['length']
             window = np.ones(N)
             return window
@@ -644,6 +643,5 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     QApplication.setStyle('Fusion')
     mainWindow = MainWindow()
-    # apply_stylesheet(app, theme='dark_blue.xml')
     mainWindow.show()
     sys.exit(app.exec_())

@@ -234,7 +234,7 @@ class Ui_MainWindow(object):
         self.comboBox_2.setItemText(0, _translate("MainWindow", "symmetric"))
         self.comboBox_2.setItemText(1, _translate("MainWindow", "periodic"))
         self.comboBox.setItemText(0, _translate("MainWindow", "hamming"))
-        self.comboBox.setItemText(1, _translate("MainWindow", "reticular"))
+        self.comboBox.setItemText(1, _translate("MainWindow", "rectangular"))
         self.comboBox.setItemText(2, _translate("MainWindow", "triang"))
         self.comboBox.setItemText(3, _translate("MainWindow", "blackman"))
         self.comboBox.setItemText(4, _translate("MainWindow", "hann"))
