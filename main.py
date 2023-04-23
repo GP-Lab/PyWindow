@@ -594,7 +594,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             sio.savemat(save_path, data_dict)
 
     def about(self):
-        QMessageBox.about(self, "About", "pywindow Dev edition\nEmail:purehyacinth@Outlook.com")
+        QMessageBox.about(self, "About", "pywindow v0.1\nGP-Lab\n2023/4/23\nContact:purehyacinth@Outlook.com")
 
     def getwindow(self, i):
         # 用于退出函数
