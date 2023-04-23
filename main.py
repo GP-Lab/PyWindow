@@ -481,8 +481,9 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 elif self.response_mode == 0:
                     ax2.set_ylabel('Normalized magnitude')
 
-                ax2.plot(freqs_normalized, fft_vals, color=COLORS[j])
-                ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
+                freqs_normalized_both = np.concatenate((-freqs_normalized, freqs_normalized))
+                fft_vals_both = np.concatenate((fft_vals, fft_vals))
+                ax2.plot(freqs_normalized_both, fft_vals_both, color=COLORS[j])
 
                 j += 1
 
