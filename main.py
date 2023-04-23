@@ -291,10 +291,11 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             if self.lineEdit.text() != '' and self.lineEdit_3.text().isdigit():
                 # 获取lineEdit,comboBox,lineEdit_3的值,,并且更新到字典中
 
-                #同一名字不能存在第二个
-                if self.lineEdit.text() in self.window.keys() and self.lineEdit.text()!=self.window_name:
-                    QMessageBox.warning(self, 'Warning', 'The name already exists!', QMessageBox.Yes)
-                    return
+                # #同一名字不能存在第二个
+                # if self.lineEdit.text() in self.window.keys() and self.lineEdit.text()!=self.window_name:
+                #     QMessageBox.warning(self, 'Warning', 'The name already exists!', QMessageBox.Yes)
+                #     return
+
                 self.window_name = self.lineEdit.text()
                 self.window_type = self.comboBox.currentText()
                 self.window_length = int(self.lineEdit_3.text())
@@ -335,7 +336,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 window=self.getwindow(i)
             except Exception as e:
                 return
-            ax1.plot(t, window)
+            ax1.plot(t, window,color=COLORS[j])
 
             # 计算频域
             freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
@@ -354,8 +355,10 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             elif self.response_mode == 0:
                 ax2.set_ylabel('Normalized magnitude')
 
-            ax2.plot(freqs_normalized, fft_vals, color=COLORS[j])
-            ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
+            freqs_normalized_both=np.concatenate((-freqs_normalized,freqs_normalized))
+            fft_vals_both=np.concatenate((fft_vals,fft_vals))
+            ax2.plot(freqs_normalized_both, fft_vals_both, color=COLORS[j])
+            # ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
 
             j += 1
 
@@ -382,8 +385,9 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             # 显示图例，用窗口的名字
             for i in self.listWidget.selectedItems():
                 legend_name.append(i.text())
+
+            ax2.legend(legend_name, loc='upper right')
             ax1.legend(legend_name, loc='upper right')
-            ax2.legend(legend_name)
 
         ax1.grid(True)
         ax1.set_xlabel('Samples')
@@ -578,7 +582,11 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         error_code = 0
         # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
         window_type = self.window[i.text()]['type']
-        if window_type == 'kaiser' or window_type == 'gaussian' or window_type == 'tukey' or window_type == 'taylor' or window_type == 'chebwin':
+        if window_type == 'reticular':
+            N=self.window[i.text()]['length']
+            window = np.ones(N)
+            return window
+        if window_type == 'kaiser' or window_type == 'gaussian' or window_type == 'tukey' or window_type == 'taylor' or window_type == 'chebwin' :
 
             if window_type == 'kaiser':
                 window_param = float(self.window[i.text()]['parameter_1'])

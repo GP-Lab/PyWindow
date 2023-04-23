@@ -109,6 +109,11 @@
          </item>
          <item>
           <property name="text">
+           <string>reticular</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>triang</string>
           </property>
          </item>
