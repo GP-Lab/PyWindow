@@ -4,7 +4,7 @@ import webbrowser
 
 import numpy as np
 import scipy.io as sio
-from PyQt5.QtCore import QRectF ,Qt
+from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox, QFileDialog, QGraphicsRectItem
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -16,32 +16,34 @@ from scipy.signal import get_window
 from scipy.fft import fft, fftshift
 from qt_material import apply_stylesheet
 
+
 # import gpt_module
-class Widget(QWidget,Ui_Form):
+class Widget(QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
-        self.ui=Ui_Form()
+        self.ui = Ui_Form()
         self.setupUi(self)
 
         self.lineEdit.setText('512')
         self.comboBox.setCurrentIndex(0)
 
-class Export(QWidget,Ui_Form_2):
+
+class Export(QWidget, Ui_Form_2):
     def __init__(self):
         super().__init__()
-        self.ui=Ui_Form_2()
+        self.ui = Ui_Form_2()
         self.setupUi(self)
 
 
 class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
     def __init__(self):
         super().__init__()
-        self.ui=Ui_MainWindow()
+        self.ui = Ui_MainWindow()
         self.setupUi(self)
 
         # 实例化一个widget
-        self.widget=Widget()
-        self.export=Export()
+        self.widget = Widget()
+        self.export = Export()
         # 点击analyse_parameter按钮，弹出widget
         self.actionAnalyse_Parameter.triggered.connect(self.widget.show)
         # 点击export按钮，弹出export
@@ -52,16 +54,16 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         # 点击任务栏中的New Window，弹出一个新的自己
         self.actionNew_Window.triggered.connect(self.new_window)
         # 创建一个字典用来保存窗口的参数
-        self.window={}
+        self.window = {}
 
-        self.windows=[]
+        self.windows = []
         # 一些参数的初始化
         self.i = 1
         self.plot_deafault()
-        self.point_num=512
-        self.combo_index=0
-        self.log_mode=0
-        self.legend_bool=0
+        self.point_num = 512
+        self.combo_index = 0
+        self.log_mode = 0
+        self.legend_bool = 0
 
         # 初始禁用一些控件
         self.lineEdit_2.setEnabled(False)
@@ -114,7 +116,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.actionLegend_2.triggered.connect(self.actionLegend.setChecked)
         self.actionLegend.triggered.connect(self.actionLegend_2.setChecked)
 
-
         # 点击Tool的Full analysis，弹出一个窗口
         self.actionFull_View.triggered.connect(self.full_analysis)
         self.actionFull_View_2.triggered.connect(self.full_analysis)
@@ -150,7 +151,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.actionHelp.triggered.connect(self.docs)
 
     def new_window(self):
-        self.new_window=MainWindow()
+        self.new_window = MainWindow()
         self.new_window.show()
 
     def setting_enable(self):
@@ -160,31 +161,31 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.comboBox_2.setEnabled(True)
         self.pushButton_3.setEnabled(False)
         # 当选中窗Kaiser时
-        if self.comboBox.currentText()=='kaiser':
+        if self.comboBox.currentText() == 'kaiser':
             self.lineEdit_2.setEnabled(True)
             self.lineEdit_5.setEnabled(False)
             self.label_4.setText('beta')
         # 当选中窗tukey时
-        elif self.comboBox.currentText()=='tukey':
+        elif self.comboBox.currentText() == 'tukey':
             self.lineEdit_2.setEnabled(True)
             self.lineEdit_5.setEnabled(False)
             self.label_4.setText('alpha')
         # taylor窗
-        elif self.comboBox.currentText()=='taylor':
+        elif self.comboBox.currentText() == 'taylor':
             self.lineEdit_2.setEnabled(True)
             self.lineEdit_5.setEnabled(False)
             self.label_4.setText('nbar')
         # 当选中窗chebwin时
-        elif self.comboBox.currentText()=='chebwin':
+        elif self.comboBox.currentText() == 'chebwin':
             self.lineEdit_2.setEnabled(True)
             self.lineEdit_5.setEnabled(False)
             self.label_4.setText('attn')
-         # Gaussian窗
-        elif self.comboBox.currentText()=='gaussian':
+        # Gaussian窗
+        elif self.comboBox.currentText() == 'gaussian':
             self.lineEdit_2.setEnabled(True)
             self.lineEdit_5.setEnabled(False)
             self.label_4.setText('std')
-        elif self.comboBox.currentText()=='user defined':
+        elif self.comboBox.currentText() == 'user defined':
             self.lineEdit_2.setEnabled(False)
             self.lineEdit_3.setEnabled(False)
             self.lineEdit_4.setEnabled(False)
@@ -216,6 +217,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             self.graphicsView.show()
         else:
             self.graphicsView.hide()
+
     def show_freq(self):
         if self.actionFrequency_Domain_2.isChecked():
             self.graphicsView_2.show()
@@ -224,22 +226,22 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
     def create_window(self):
         # 类型和长度默认为 Hanning 和 64
-        self.window_type='hann'
-        self.window_length=64
-        self.s_mode='symmetric'
-        self.parameter_1=''
-        self.parameter_2=''
-        self.window[self.window_name]={'type':self.window_type,'length':self.window_length,'s_mode':self.s_mode,
-                                       'parameter_1':self.parameter_1,'parameter_2':self.parameter_2}
+        self.window_type = 'hann'
+        self.window_length = 64
+        self.s_mode = 'symmetric'
+        self.parameter_1 = ''
+        self.parameter_2 = ''
+        self.window[self.window_name] = {'type': self.window_type, 'length': self.window_length, 's_mode': self.s_mode,
+                                         'parameter_1': self.parameter_1, 'parameter_2': self.parameter_2}
 
     def listwidget_add(self):
 
-        self.listWidget.addItem('window_'+str(self.i))
+        self.listWidget.addItem('window_' + str(self.i))
         # 得到创建的窗口名字
-        self.window_name='window_'+str(self.i)
+        self.window_name = 'window_' + str(self.i)
         # 把窗口的参数保存到字典中
         self.create_window()
-        self.i+=1
+        self.i += 1
 
     def listwidget_del(self):
         # 仅在选中窗口的情况下
@@ -257,6 +259,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.listwidget_forbid()
 
         # 没有选中窗口时，lineEdit和lineEdit_3不可用和comboBox和comboBox_2不可用
+
     def listwidget_forbid(self):
         self.lineEdit.setEnabled(False)
         self.lineEdit_3.setEnabled(False)
@@ -267,9 +270,10 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         self.lineEdit_2.setEnabled(False)
         self.lineEdit_4.setEnabled(False)
         self.pushButton_3.setEnabled(False)
+
     def listwidget_click(self):
 
-        self.window_name=self.listWidget.currentItem().text()
+        self.window_name = self.listWidget.currentItem().text()
         # 选定窗口后，把窗口的参数显示在lineEdit中
         self.lineEdit.setText(self.window_name)
         # 将窗口类型显示到comboBox中
@@ -313,7 +317,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
                 self.s_mode = self.comboBox_2.currentText()
                 self.window[self.window_name] = {'type': self.window_type, 'length': self.window_length,
-                                                 's_mode': self.s_mode,'parameter_1': self.parameter_1,'parameter_2': self.parameter_2}
+                                                 's_mode': self.s_mode, 'parameter_1': self.parameter_1,
+                                                 'parameter_2': self.parameter_2}
                 # 更新listWidget的显示
                 self.listWidget.currentItem().setText(self.window_name)
                 # 更新图像
@@ -332,22 +337,22 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         ax1 = self.canvas1.figure.add_subplot(111)
         ax2 = self.canvas2.figure.add_subplot(111)
         COLORS = list(mcolors.TABLEAU_COLORS.values()) + list(mcolors.CSS4_COLORS.values())
-        j=0
+        j = 0
         # 遍历listWidget中的窗口，画出所有窗口的图像
         for i in self.listWidget.selectedItems():
             t = np.arange(self.window[i.text()]['length'])
             # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
 
             try:
-                window=self.getwindow(i)
+                window = self.getwindow(i)
             except Exception as e:
                 return
-            ax1.plot(t, window,color=COLORS[j])
+            ax1.plot(t, window, color=COLORS[j])
 
             # 计算频域
             freqs = np.arange(self.point_num) / self.point_num * 2 * np.pi
             a = fft(window, self.point_num)
-            fft_vals = np.abs(a[:self.point_num]/abs(a).max())
+            fft_vals = np.abs(a[:self.point_num] / abs(a).max())
             freqs_normalized = freqs / np.pi
 
             # a = fft(window, self.point_num)
@@ -356,37 +361,37 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             # 当选中dB模式，将幅度响应转换为dB
             if self.response_mode == 1:
                 ax2.set_ylabel('Normalized magnitude(dB)')
-                fft_vals = 20 * np.log10(np.abs(fft_vals))
+                fft_vals = 20 * np.log10(np.maximum(np.abs(fft_vals), 1e-10))
 
             elif self.response_mode == 0:
                 ax2.set_ylabel('Normalized magnitude')
 
-            freqs_normalized_both=np.concatenate((-freqs_normalized,freqs_normalized))
-            fft_vals_both=np.concatenate((fft_vals,fft_vals))
+            freqs_normalized_both = np.concatenate((-freqs_normalized, freqs_normalized))
+            fft_vals_both = np.concatenate((fft_vals, fft_vals))
             ax2.plot(freqs_normalized_both, fft_vals_both, color=COLORS[j])
             # ax2.plot(-freqs_normalized, fft_vals, color=COLORS[j])
 
             j += 1
 
-       # 设置坐标轴的范围
-        if self.log_mode==1:
+        # 设置坐标轴的范围
+        if self.log_mode == 1:
             if self.response_mode == 1:
                 ax2.set_ylim([-150, 1e2])
             elif self.response_mode == 0:
                 ax2.set_ylim([0, 50])
             ax2.set_xscale('log')
             ax2.set_xlim([1e-3, 1])
-        elif self.log_mode==0:
+        elif self.log_mode == 0:
             ax2.set_yscale('linear')
-            if self.combo_index==0:
+            if self.combo_index == 0:
                 ax2.set_xlim([0, 1])
-            elif self.combo_index==1:
+            elif self.combo_index == 1:
                 ax2.set_xlim([0, 2])
-            elif self.combo_index==2:
+            elif self.combo_index == 2:
                 ax2.set_xlim([-1, 1])
 
-       # 设置图例
-        if self.legend_bool==1:
+        # 设置图例
+        if self.legend_bool == 1:
             legend_name = []
             # 显示图例，用窗口的名字
             for i in self.listWidget.selectedItems():
@@ -427,12 +432,15 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
     def copy_window(self):
         if self.listWidget.currentItem():
             # 如果名字重复，不进行复制
-            if self.window_name+'_copy' in self.window.keys():
+            if self.window_name + '_copy' in self.window.keys():
                 QMessageBox.warning(self, 'Warning', 'The name is already exist!', QMessageBox.Yes)
                 return
-            self.window[self.window_name+'_copy']={'type':self.window[self.window_name]['type'],'length':self.window[self.window_name]['length'],'s_mode':self.window[self.window_name]['s_mode'],
-                                       'parameter_1':self.window[self.window_name]['parameter_1'],'parameter_2':self.window[self.window_name]['parameter_2']}
-            self.listWidget.addItem(self.window_name+'_copy')
+            self.window[self.window_name + '_copy'] = {'type': self.window[self.window_name]['type'],
+                                                       'length': self.window[self.window_name]['length'],
+                                                       's_mode': self.window[self.window_name]['s_mode'],
+                                                       'parameter_1': self.window[self.window_name]['parameter_1'],
+                                                       'parameter_2': self.window[self.window_name]['parameter_2']}
+            self.listWidget.addItem(self.window_name + '_copy')
 
     def show_legend(self):
         # 如果actionLegend被选中，显示图例
@@ -476,7 +484,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 # 当选中dB模式，将幅度响应转换为dB
                 if self.response_mode == 1:
                     ax2.set_ylabel('Normalized magnitude(dB)')
-                    fft_vals = 20 * np.log10(np.abs(fft_vals))
+                    fft_vals = 20 * np.log10(np.maximum(np.abs(fft_vals), 1e-10))
 
                 elif self.response_mode == 0:
                     ax2.set_ylabel('Normalized magnitude')
@@ -523,6 +531,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
         plt.subplots_adjust(left=0.1, bottom=0.2, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
         plt.show()
+
     def export_window(self):
         # 判断用户是否选择了窗口
         if not self.listWidget.currentItem():
@@ -548,8 +557,9 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
         # 将窗函数保存到文件
         for i in self.listWidget.selectedItems():
             # 获取窗口
-            if self.comboBox.currentText() == 'kaiser' or self.comboBox.currentText() == 'gaussian' or self.comboBox.currentText() == 'tukey'or self.comboBox.currentText() == 'taylor' or self.comboBox.currentText() == 'chebwin':
-                window = get_window((self.window[i.text()]['type'], float(self.window[i.text()]['parameter_1'])), int(self.window[i.text()]['length']))
+            if self.comboBox.currentText() == 'kaiser' or self.comboBox.currentText() == 'gaussian' or self.comboBox.currentText() == 'tukey' or self.comboBox.currentText() == 'taylor' or self.comboBox.currentText() == 'chebwin':
+                window = get_window((self.window[i.text()]['type'], float(self.window[i.text()]['parameter_1'])),
+                                    int(self.window[i.text()]['length']))
 
             else:
                 if self.window[i.text()]['s_mode'] == 'symmetric':
@@ -580,19 +590,20 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
             # 将窗函数保存到mat文件
         if self.export.comboBox.currentIndex() == 1:
             sio.savemat(save_path, data_dict)
+
     def about(self):
         QMessageBox.about(self, "About", "pywindow Dev edition\nEmail:purehyacinth@Outlook.com")
 
-    def getwindow(self,i):
+    def getwindow(self, i):
         # 用于退出函数
         error_code = 0
         # 获取窗口的类型，并获取窗函数,如果是Kaiser，还要获取beta
         window_type = self.window[i.text()]['type']
         if window_type == 'reticular':
-            N=self.window[i.text()]['length']
+            N = self.window[i.text()]['length']
             window = np.ones(N)
             return window
-        if window_type == 'kaiser' or window_type == 'gaussian' or window_type == 'tukey' or window_type == 'taylor' or window_type == 'chebwin' :
+        if window_type == 'kaiser' or window_type == 'gaussian' or window_type == 'tukey' or window_type == 'taylor' or window_type == 'chebwin':
 
             if window_type == 'kaiser':
                 window_param = float(self.window[i.text()]['parameter_1'])
@@ -604,25 +615,27 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 window_param = int(self.window[i.text()]['parameter_1'])
                 # 判断是否小于1
                 if window_param < 1:
-                    QMessageBox.warning(self, 'Warning', 'Taylor window parameter must be greater than 1!', QMessageBox.Yes)
-                    error_code=1
+                    QMessageBox.warning(self, 'Warning', 'Taylor window parameter must be greater than 1!',
+                                        QMessageBox.Yes)
+                    error_code = 1
             elif window_type == 'chebwin':
                 window_param = float(self.window[i.text()]['parameter_1'])
-            if error_code!=1:
+            if error_code != 1:
                 window_length = int(self.window[i.text()]['length'])
                 window = get_window((window_type, window_param), Nx=window_length)
 
         else:
-            if self.window[i.text()]['s_mode']=='symmetric':
-                s_mode=False
-            elif self.window[i.text()]['s_mode']=='periodic':
-                s_mode=True
-            window = get_window(self.window[i.text()]['type'], int(self.window[i.text()]['length']),fftbins=s_mode)
+            if self.window[i.text()]['s_mode'] == 'symmetric':
+                s_mode = False
+            elif self.window[i.text()]['s_mode'] == 'periodic':
+                s_mode = True
+            window = get_window(self.window[i.text()]['type'], int(self.window[i.text()]['length']), fftbins=s_mode)
 
         return window
 
     def docs(self):
         webbrowser.open('https://pywindow.readthedocs.io/en/latest/')
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

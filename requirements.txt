@@ -1,0 +1,8 @@
+matplotlib==3.5.3
+numpy==1.21.6
+PyQt5==5.15.9
+pyqt5-tools==5.15.9.3.3
+qt-material==2.14
+scipy==1.7.3
+sphinx==5.3.0
+sphinx_rtd_theme==1.2.0
