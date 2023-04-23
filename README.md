@@ -11,7 +11,7 @@ conda create --name env_name python==3.7.16
 
 The codebase also depends on a few pip packages. You can download and install these packages using pip.
 ```python
-pip install -r requirments.txt
+pip install -r requirements.txt
 ```
 
 # More Information
