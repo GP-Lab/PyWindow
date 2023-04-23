@@ -7,6 +7,7 @@ import scipy.io as sio
 from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox, QFileDialog, QGraphicsRectItem
 from matplotlib import pyplot as plt
+# plt.ion()
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.colors as mcolors
 from Main_window import Ui_MainWindow
@@ -531,6 +532,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
                 ax2.legend(legend_name)
 
         plt.subplots_adjust(left=0.1, bottom=0.2, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
+        plt.ion()
         plt.show()
 
     def export_window(self):
