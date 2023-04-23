@@ -327,7 +327,7 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionGpt"/>
+    <addaction name="actionHelp"/>
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
@@ -451,6 +451,11 @@
    </property>
    <property name="text">
     <string>Export</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help Docs</string>
    </property>
   </action>
  </widget>

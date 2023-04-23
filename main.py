@@ -1,5 +1,7 @@
 import datetime
 import sys
+import webbrowser
+
 import numpy as np
 import scipy.io as sio
 from PyQt5.QtCore import QRectF ,Qt
@@ -143,6 +145,10 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
         # 点击New_window 2按钮，弹出一个窗口
         self.actionNew_Window_2.triggered.connect(self.new_window)
+
+        # 点击docs按钮，弹出帮助文档网页
+        self.actionHelp.triggered.connect(self.docs)
+
     def new_window(self):
         self.new_window=MainWindow()
         self.new_window.show()
@@ -615,6 +621,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_Form):
 
         return window
 
+    def docs(self):
+        webbrowser.open('https://pywindow.readthedocs.io/en/latest/')
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
